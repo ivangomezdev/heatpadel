@@ -1,0 +1,285 @@
+.rankings {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #122a32;
+  color: #fff;
+}
+
+.rankings__visual {
+  position: relative;
+  min-height: 740px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.rankings__court,
+.rankings__shade,
+.rankings__frame {
+  position: absolute;
+  inset: 0;
+}
+
+.rankings__court {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 42% center;
+  z-index: -3;
+}
+
+.rankings__shade {
+  background: linear-gradient(
+    180deg,
+    #102b39c9 0%,
+    #0c304d59 55%,
+    #0d293cdd 100%
+  );
+  z-index: -2;
+}
+
+.rankings__frame {
+  inset: 26px;
+  border: 1px solid #ffffff4d;
+  border-radius: 16px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.rankings__visual-label,
+.rankings__visual-footer {
+  position: absolute;
+  z-index: 3;
+  left: 40px;
+  right: 40px;
+  text-align: center;
+  font-size: 9px;
+  letter-spacing: 2px;
+}
+
+.rankings__visual-label {
+  top: 55px;
+}
+.rankings__visual-footer {
+  bottom: 52px;
+  color: var(--lime);
+}
+
+.rankings__backdrop-type {
+  position: absolute;
+  top: 18%;
+  left: 8%;
+  right: 8%;
+  font-family: var(--display);
+  font-size: clamp(90px, 10vw, 165px);
+  line-height: 1.02;
+  text-align: center;
+  letter-spacing: -2px;
+  z-index: -1;
+}
+
+.rankings__player {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  max-width: 90%;
+  height: 76%;
+  object-fit: contain;
+  filter: drop-shadow(0 15px 20px #0004);
+}
+
+.rankings__content {
+  padding: 68px 11%;
+  min-width: 0;
+}
+.rankings__title {
+  font-family: var(--display);
+  font-size: clamp(40px, 4.1vw, 64px);
+  font-weight: 400;
+  line-height: 1.08;
+}
+.rankings__title > span {
+  color: var(--lime);
+}
+.rankings__intro {
+  margin: 24px 0 28px;
+  color: #c2d0d1;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.rankings__switch {
+  display: flex;
+  gap: 8px;
+  padding: 5px;
+  border: 1px solid #ffffff26;
+  border-radius: 100px;
+  width: fit-content;
+  margin-bottom: 24px;
+}
+.rankings__sport {
+  border: 0;
+  border-radius: 100px;
+  background: transparent;
+  color: #d6e1e0;
+  min-height: 40px;
+  padding: 10px 22px;
+  font-size: 12px;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+.rankings__sport:hover {
+  background: #ffffff12;
+}
+.rankings__sport--active,
+.rankings__sport--active:hover {
+  background: var(--lime);
+  color: var(--ink);
+}
+.rankings__board {
+  border-top: 1px solid #ffffff30;
+  border-bottom: 1px solid #ffffff30;
+}
+.rankings__board-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 0;
+}
+.rankings__board-heading h3 {
+  font-size: 12px;
+  font-weight: 400;
+}
+.rankings__status {
+  color: var(--lime);
+  font-size: 8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.rankings__empty {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 5px 0 25px;
+}
+.rankings__empty > svg {
+  flex-shrink: 0;
+  color: var(--lime);
+}
+.rankings__empty p {
+  font-size: 13px;
+  line-height: 1.6;
+}
+.rankings__empty p > span {
+  display: block;
+  font-size: 11px;
+  color: #adbec1;
+  margin-top: 7px;
+  line-height: 1.7;
+}
+.rankings__cta {
+  margin-top: 25px;
+}
+.rankings__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.rankings__table th,
+.rankings__table td {
+  padding: 14px 6px;
+  text-align: left;
+  border-top: 1px solid #ffffff20;
+}
+.rankings__table thead {
+  color: #adbec1;
+  font-size: 10px;
+}
+.rankings__table tbody tr:first-child {
+  background: #c4f35b0d;
+  color: var(--lime);
+}
+.rankings__table tbody th {
+  font-weight: 400;
+}
+.rankings__table tbody td:first-child {
+  font-family: var(--display);
+  font-size: 21px;
+}
+.rankings__table th:last-child,
+.rankings__table td:last-child {
+  text-align: right;
+}
+.rankings__caption {
+  text-align: left;
+  font-size: 11px;
+  padding-bottom: 12px;
+  color: #adbec1;
+}
+
+@media (min-width: 761px) and (max-width: 1050px) {
+  .rankings__content {
+    padding: 58px 8%;
+  }
+  .rankings__board-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .header__nav {
+    gap: 14px;
+  }
+  .header__link {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 760px) {
+  .rankings {
+    grid-template-columns: 1fr;
+  }
+  .rankings__visual {
+    min-height: 0;
+    height: clamp(400px, 115vw, 580px);
+  }
+  .rankings__frame {
+    inset: 18px;
+  }
+  .rankings__visual-label {
+    top: 40px;
+    font-size: 8px;
+    letter-spacing: 1.4px;
+  }
+  .rankings__visual-footer {
+    bottom: 39px;
+    font-size: 8px;
+  }
+  .rankings__backdrop-type {
+    top: 18%;
+    font-size: clamp(85px, 23vw, 130px);
+  }
+  .rankings__player {
+    height: 78%;
+    bottom: 9%;
+  }
+  .rankings__content {
+    padding: 48px 24px 55px;
+  }
+  .rankings__title {
+    font-size: clamp(39px, 10.6vw, 58px);
+  }
+  .rankings__intro {
+    font-size: 13px;
+  }
+  .rankings__board-heading {
+    gap: 8px;
+  }
+  .rankings__board-heading h3 {
+    font-size: 11px;
+  }
+  .rankings__status {
+    font-size: 7px;
+  }
+}

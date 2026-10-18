@@ -51,5 +51,6 @@ export const navigation = [
   { href: "#club", label: "El club" },
   { href: "#canchas", label: "Canchas" },
   { href: "#academia", label: "Academia" },
+  { href: "#rankings", label: "Rankings" },
   { href: "#contacto", label: "Encuéntranos" },
 ];

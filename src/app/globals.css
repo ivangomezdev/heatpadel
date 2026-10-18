@@ -140,11 +140,10 @@ a:focus-visible {
   line-height: 1.6;
   margin-bottom: 24px;
 }
-.section-label > span {
+.section-label__ball {
   width: 7px;
   height: 7px;
-  border: 1px solid currentColor;
-  border-radius: 50%;
+  flex-shrink: 0;
 }
 .section-label--light {
   color: var(--lime);

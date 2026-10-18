@@ -49,7 +49,29 @@ export function Button({
 export function SectionLabel({ children, light = false }) {
   return (
     <p className={`section-label${light ? " section-label--light" : ""}`}>
-      <span aria-hidden="true" />
+      <svg
+        className="section-label__ball"
+        width="7"
+        height="7"
+        viewBox="0 0 20 20"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <circle
+          cx="10"
+          cy="10"
+          r="9"
+          fill="#c4f35b"
+          stroke="#17211d"
+          strokeWidth="1.4"
+        />
+        <path
+          d="M4 3.3C10 6 10 14 4 16.7M16 3.3C10 6 10 14 16 16.7"
+          fill="none"
+          stroke="#fff"
+          strokeWidth="1.7"
+        />
+      </svg>
       {children}
     </p>
   );

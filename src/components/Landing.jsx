@@ -5,6 +5,7 @@ import { club } from "../data/club";
 import { Arrow, Button, SectionLabel } from "./ui";
 import ScrollHero from "./ScrollHero";
 import BookingDialog from "./BookingDialog";
+import Rankings from "./Rankings";
 
 export default function Landing() {
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -163,6 +164,7 @@ export default function Landing() {
             </Button>
           </div>
         </section>
+        <Rankings />
         <section className="experience section">
           <div className="section__head">
             <div>
