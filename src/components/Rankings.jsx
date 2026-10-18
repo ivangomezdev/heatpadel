@@ -6,11 +6,159 @@ import { rankings } from "../data/rankings";
 import { Arrow, Button, SectionLabel } from "./ui";
 import "./Rankings.css";
 
+function Crown() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="m3 6 4.5 4L12 4l4.5 6L21 6l-2 11H5L3 6Zm3 14h12"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function PlayerAvatar({ name, champion = false }) {
+  const initials = name
+    .split(" ")
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join("");
+  return (
+    <span
+      className={`rankings__avatar${champion ? " rankings__avatar--champion" : ""}`}
+      aria-hidden="true"
+    >
+      {champion && (
+        <span className="rankings__crown">
+          <Crown />
+        </span>
+      )}
+      {initials}
+    </span>
+  );
+}
+
+function Podium({ players }) {
+  return (
+    <ol className="rankings__podium" aria-label="Los tres mejores jugadores">
+      {players.map((player, index) => (
+        <li
+          key={player.id}
+          className={`rankings__podium-place rankings__podium-place--${index + 1}`}
+        >
+          <span className="rankings__place-label">
+            {index === 0
+              ? "LÍDER"
+              : `${String(index + 1).padStart(2, "0")} · TOP 3`}
+          </span>
+          <PlayerAvatar name={player.name} champion={index === 0} />
+          <h4 className="rankings__podium-name">{player.name}</h4>
+          <p className="rankings__podium-score">
+            {player.points.toLocaleString("es-MX")} <span>PTS</span>
+          </p>
+          <span className="rankings__podium-number" aria-hidden="true">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function Leaderboard({ sport, competitionUrl }) {
+  const players = [...sport.players].sort((a, b) => b.points - a.points);
+  return (
+    <div className="rankings__board" aria-live="polite" aria-atomic="true">
+      <div className="rankings__board-heading">
+        <div>
+          <span className="rankings__eyebrow">
+            EL CLUB TIENE A SUS PROTAGONISTAS
+          </span>
+          <h3>
+            Ranking semanal <span>· {sport.label}</span>
+          </h3>
+        </div>
+        <span className="rankings__top-label">
+          TOP {String(players.length).padStart(2, "0")}
+        </span>
+      </div>
+      {players.length > 0 ? (
+        <>
+          <Podium players={players.slice(0, 3)} />
+          {players.length > 3 && (
+            <table className="rankings__table">
+              <caption className="rankings__sr-only">
+                Más posiciones del ranking semanal de {sport.label}
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">POS.</th>
+                  <th scope="col">JUGADOR</th>
+                  <th scope="col">PUNTOS</th>
+                </tr>
+              </thead>
+              <tbody>
+                {players.slice(3).map((player, index) => (
+                  <tr key={player.id}>
+                    <td>
+                      <span className="rankings__row-position">
+                        {String(index + 4).padStart(2, "0")}
+                      </span>
+                    </td>
+                    <th scope="row">
+                      <span className="rankings__row-player">
+                        <PlayerAvatar name={player.name} />
+                        <span>{player.name}</span>
+                      </span>
+                    </th>
+                    <td>
+                      <strong>{player.points.toLocaleString("es-MX")}</strong>
+                      <span className="rankings__points-unit"> PTS</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+          <a
+            className="rankings__invitation"
+            href={competitionUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span className="rankings__invitation-icon" aria-hidden="true">
+              ?
+            </span>
+            <p>
+              <strong>TU NOMBRE AQUÍ.</strong>
+              <span>El próximo lugar se gana en la cancha.</span>
+            </p>
+            <Arrow diagonal />
+          </a>
+        </>
+      ) : (
+        <p className="rankings__empty">
+          La primera posición está por escribirse. La clasificación de{" "}
+          {sport.label.toLowerCase()} estará disponible próximamente.
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function Rankings() {
   const [selectedSport, setSelectedSport] = useState(rankings[0].id);
   const selected = rankings.find((sport) => sport.id === selectedSport);
-  const hasResults = selected.players.length > 0;
-
+  const competitionUrl = `${club.whatsapp}?text=${encodeURIComponent(`Hola HEAT, quiero información sobre las ligas y el ranking de ${selected.label.toLowerCase()}.`)}`;
   return (
     <section
       className="rankings"
@@ -42,26 +190,22 @@ export default function Rankings() {
           width="800"
           height="1200"
         />
-        <span className="rankings__visual-footer">
-          PASIÓN. CONSTANCIA. HEAT.
-        </span>
+        <div className="rankings__visual-footer">
+          <span>NO SOLO JUEGUES.</span>
+          <strong>DEJA TU HUELLA.</strong>
+          <span>PASIÓN. CONSTANCIA. HEAT.</span>
+        </div>
       </div>
-
       <div className="rankings__content">
-        <SectionLabel light>CADA PARTIDO CUENTA</SectionLabel>
+        <SectionLabel light>RANKINGS · HEAT CLUB</SectionLabel>
         <h2 className="rankings__title" id="rankings-title">
-          <span>RANKINGS</span>
+          TU NOMBRE.
           <br />
-          DE MEJORES
-          <br />
-          JUGADORES.
+          <span>EN LO MÁS ALTO.</span>
         </h2>
         <p className="rankings__intro">
-          El esfuerzo se entrena. El lugar se gana.
-          <br />
-          Tu próximo reto empieza en la cancha.
+          Cada partido cuenta. Cada punto te acerca al top.
         </p>
-
         <div
           className="rankings__switch"
           role="group"
@@ -76,78 +220,24 @@ export default function Rankings() {
               onClick={() => setSelectedSport(sport.id)}
             >
               {sport.label}
+              <span aria-hidden="true">↗</span>
             </button>
           ))}
         </div>
-
-        <div className="rankings__board" aria-live="polite" aria-atomic="true">
-          <div className="rankings__board-heading">
-            <h3>Ranking semanal · {selected.label}</h3>
-            {(selected.isDemo || !hasResults) && (
-              <span className="rankings__status">
-                {selected.isDemo ? "Ejemplo" : "Próximamente"}
-              </span>
-            )}
-          </div>
-          {hasResults ? (
-            <table className="rankings__table">
-              <caption className="rankings__caption">
-                {selected.isDemo
-                  ? "Semana de ejemplo · Jugadores y puntos ficticios"
-                  : `Mejores jugadores de ${selected.label}`}
-              </caption>
-              <thead>
-                <tr>
-                  <th scope="col">Pos.</th>
-                  <th scope="col">Jugador</th>
-                  <th scope="col">Puntos</th>
-                </tr>
-              </thead>
-              <tbody>
-                {selected.players.map((player, index) => (
-                  <tr key={player.id}>
-                    <td>{String(index + 1).padStart(2, "0")}</td>
-                    <th scope="row">{player.name}</th>
-                    <td>{player.points.toLocaleString("es-MX")}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <div className="rankings__empty">
-              <svg
-                width="29"
-                height="29"
-                viewBox="0 0 32 32"
-                fill="none"
-                aria-hidden="true"
-              >
-                <path
-                  d="M5 25V16h7m0 9V8h8v17m0-6h7v6M3 26h26"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <p>
-                Aquí conocerás a quienes marcan el ritmo.
-                <span>
-                  La clasificación oficial de {selected.label.toLowerCase()}{" "}
-                  estará disponible próximamente.
-                </span>
-              </p>
-            </div>
-          )}
+        <Leaderboard sport={selected} competitionUrl={competitionUrl} />
+        <div className="rankings__actions">
+          <p>
+            ¿LISTO PARA SUBIR?<span>Tu próximo reto empieza en HEAT.</span>
+          </p>
+          <Button className="rankings__cta" href={competitionUrl} external>
+            Quiero competir <Arrow diagonal />
+          </Button>
         </div>
-
-        <Button
-          className="rankings__cta"
-          href={`${club.whatsapp}?text=${encodeURIComponent(`Hola HEAT, quiero información sobre las ligas y el ranking de ${selected.label.toLowerCase()}.`)}`}
-          external
-        >
-          Quiero competir <Arrow diagonal />
-        </Button>
+        {selected.isDemo && (
+          <p className="rankings__demo-note">
+            Vista previa con jugadores y puntos ficticios.
+          </p>
+        )}
       </div>
     </section>
   );

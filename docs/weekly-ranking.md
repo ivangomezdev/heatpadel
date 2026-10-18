@@ -2,7 +2,9 @@
 
 ## Implementado en la landing
 
-Sección `#rankings` con selectores Pádel/Pickleball, cinco jugadores ficticios por deporte y puntos de ejemplo. La tabla muestra explícitamente que son datos ficticios. Los registros están en `src/data/rankings.js` y conservan `isDemo: true`. No se reciben resultados de partidos ni se actualiza un ranking real todavía.
+Sección `#rankings` con selectores Pádel/Pickleball y cinco jugadores ficticios por deporte. Un podio destaca los tres primeros puestos, con el líder en verde HEAT; una tabla compacta muestra el resto. La clasificación se ordena por puntos de mayor a menor. Los enlaces «Tu nombre aquí» y «Quiero competir» abren una consulta por WhatsApp para el deporte seleccionado.
+
+La aclaración de jugadores y puntos ficticios aparece como una nota discreta debajo de la sección, fuera de la tabla. Los registros están en `src/data/rankings.js` y conservan `isDemo: true`. No se reciben resultados de partidos ni se actualiza un ranking real todavía.
 
 La imagen de la jugadora es decorativa y no corresponde a ninguna persona de la clasificación. El fondo es una fotografía existente de HEAT. El círculo de las etiquetas se reemplazó por un SVG de pelota de tenis de 7 × 7 px, manteniendo su tamaño.
 
