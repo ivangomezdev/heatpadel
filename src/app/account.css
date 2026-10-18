@@ -38,12 +38,12 @@
   z-index: 1;
   margin-top: 90px;
 }
-.account-entry__headline > p {
+.account-entry__headline > p:not(.section-label) {
   font: 400 clamp(65px, 7.1vw, 112px) / 1.05 var(--display);
   letter-spacing: -0.025em;
   margin-top: 28px;
 }
-.account-entry__headline > p span {
+.account-entry__headline > p:not(.section-label) span {
   color: var(--lime);
 }
 .account-entry__player {
@@ -874,7 +874,7 @@
   .account-entry__headline .section-label {
     font-size: 7px;
   }
-  .account-entry__headline > p {
+  .account-entry__headline > p:not(.section-label) {
     font-size: 40px;
     margin-top: 15px;
   }
