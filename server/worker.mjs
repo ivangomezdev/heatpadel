@@ -13,7 +13,7 @@ const json = (data, status = 200) =>
   Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
 const fail = (message, status = 400) => json({ error: message }, status);
 const reservationColumns =
-  "id, court_id AS courtId, date, hour, starts_at AS startsAt, status, version";
+  'id, court_id AS "courtId", date, hour, starts_at AS "startsAt", status, version';
 async function bodyOf(request) {
   if (!request.headers.get("content-type")?.includes("application/json"))
     throw new Error("INVALID_BODY");
@@ -48,7 +48,7 @@ async function handleApi(request, env) {
     request.headers.get("origin") !== origin
   )
     return fail("Solicitud no permitida.", 403);
-  const auth = createAuth(env, origin);
+  const auth = env.AUTH || createAuth(env, origin);
   if (url.pathname.startsWith("/api/auth/")) {
     // Profile changes are not exposed until a validated profile editor is available.
     const route = url.pathname.slice("/api/auth".length);
@@ -111,7 +111,7 @@ async function handleApi(request, env) {
     const date = url.searchParams.get("date");
     if (!validDate(date)) return fail("Fecha inválida.");
     const { results } = await env.DB.prepare(
-      "SELECT court_id AS courtId, hour FROM reservations WHERE date = ? AND status = 'confirmed'",
+      `SELECT court_id AS "courtId", hour FROM reservations WHERE date = ? AND status = 'confirmed'`,
     )
       .bind(date)
       .all();
@@ -212,7 +212,10 @@ export default {
       return await env.ASSETS.fetch(request);
     } catch (error) {
       if (error.message === "INVALID_BODY") return fail("Solicitud inválida.");
-      if (/UNIQUE constraint failed: reservations/.test(error.message))
+      if (
+        /UNIQUE constraint failed: reservations/.test(error.message) ||
+        (error.code === "23505" && error.constraint === "one_active_court_slot")
+      )
         return fail(
           "Ese turno acaba de ser reservado. Elige otro horario.",
           409,
@@ -220,7 +223,7 @@ export default {
       console.error("HEAT request failed", {
         path: new URL(request.url).pathname,
         type: error.name,
-        message: error.message?.replace(/https?:\/\/\S+/g, "[url]"),
+        code: error.code,
       });
       return fail(
         "No pudimos completar la solicitud. Inténtalo de nuevo.",

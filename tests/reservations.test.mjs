@@ -3,6 +3,15 @@ import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
 import { readFile, readdir } from "node:fs/promises";
 import { Miniflare, convertV4MiniflareOptions } from "miniflare";
+import { PGlite } from "@electric-sql/pglite";
+import { drizzle } from "drizzle-orm/pglite";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { createConfiguredAuth } from "../server/auth-options.mjs";
+import { createPostgresDatabase } from "../server/postgres-db.mjs";
+import { migrationStatements } from "../server/postgres-migrations.mjs";
+import * as pgSchema from "../server/schema-postgres.mjs";
+import worker from "../server/worker.mjs";
+const postgres = process.env.HEAT_TEST_DATABASE === "postgres";
 import { canChange, CHANGE_NOTICE_MS } from "../src/lib/booking.js";
 
 let mf, db, alice, bob;
@@ -55,25 +64,62 @@ async function signup(email, ip) {
   });
 }
 before(async () => {
-  mf = new Miniflare(
-    convertV4MiniflareOptions({
-      name: "heat-test",
-      modules: true,
-      scriptPath: "dist/server/index.js",
-      compatibilityDate: "2026-10-01",
-      compatibilityFlags: ["nodejs_compat"],
-      d1Databases: ["DB"],
-      bindings: { BETTER_AUTH_SECRET: randomBytes(48).toString("base64") },
-    }),
-  );
-  db = await mf.getD1Database("DB");
-  for (const file of (await readdir("drizzle"))
-    .filter((f) => f.endsWith(".sql"))
-    .sort()) {
-    for (const statement of (await readFile(`drizzle/${file}`, "utf8")).split(
-      "--> statement-breakpoint",
-    ))
-      if (statement.trim()) await db.prepare(statement).run();
+  if (postgres) {
+    const pg = new PGlite();
+    const statements = await migrationStatements();
+    for (let pass = 0; pass < 2; pass++) {
+      await pg.transaction(async (tx) => {
+        for (const statement of statements) await tx.query(statement);
+      });
+    }
+    db = createPostgresDatabase(
+      (sql, values) => pg.query(sql, values),
+      (queries) =>
+        pg.transaction(async (tx) => {
+          const results = [];
+          for (const q of queries)
+            results.push(await tx.query(q.sql, q.params));
+          return results;
+        }),
+    );
+    const env = {
+      DB: db,
+      BETTER_AUTH_SECRET: randomBytes(48).toString("base64"),
+    };
+    env.AUTH = createConfiguredAuth(
+      env,
+      origin,
+      drizzleAdapter(drizzle(pg), {
+        provider: "pg",
+        schema: pgSchema,
+        transaction: false,
+      }),
+    );
+    mf = {
+      dispatchFetch: (url, init) => worker.fetch(new Request(url, init), env),
+      dispose: () => pg.close(),
+    };
+  } else {
+    mf = new Miniflare(
+      convertV4MiniflareOptions({
+        name: "heat-test",
+        modules: true,
+        scriptPath: "dist/server/index.js",
+        compatibilityDate: "2026-10-01",
+        compatibilityFlags: ["nodejs_compat"],
+        d1Databases: ["DB"],
+        bindings: { BETTER_AUTH_SECRET: randomBytes(48).toString("base64") },
+      }),
+    );
+    db = await mf.getD1Database("DB");
+    for (const file of (await readdir("drizzle"))
+      .filter((f) => f.endsWith(".sql"))
+      .sort()) {
+      for (const statement of (await readFile(`drizzle/${file}`, "utf8")).split(
+        "--> statement-breakpoint",
+      ))
+        if (statement.trim()) await db.prepare(statement).run();
+    }
   }
   alice = await signup("alice@example.test", "127.0.0.2");
   assert.equal(alice.status, 200, JSON.stringify(alice.body));
@@ -313,11 +359,11 @@ test("inicio de sesión rechaza contraseña incorrecta; logout revoca sesión", 
 
 test("americano: acceso, validación, concurrencia y publicación única al ranking semanal", async () => {
   await db
-    .prepare("UPDATE user SET name='Alice QA' WHERE id=?")
+    .prepare(`UPDATE "user" SET name='Alice QA' WHERE id=?`)
     .bind(alice.body.user.id)
     .run();
   await db
-    .prepare("UPDATE user SET name='Bob QA' WHERE id=?")
+    .prepare(`UPDATE "user" SET name='Bob QA' WHERE id=?`)
     .bind(bob.body.user.id)
     .run();
   const payload = {

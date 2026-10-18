@@ -5,8 +5,7 @@ import {
   POINT_TARGETS,
   weekStart,
 } from "../src/lib/americano.js";
-const columns =
-  "id, owner_id AS ownerId, name, sport, points_per_match AS pointsPerMatch, court_count AS courtCount, players_json AS playersJson, rounds_json AS roundsJson, results_json AS resultsJson, status, version, created_at AS createdAt, completed_at AS completedAt";
+const columns = `id, owner_id AS "ownerId", name, sport, points_per_match AS "pointsPerMatch", court_count AS "courtCount", players_json AS "playersJson", rounds_json AS "roundsJson", results_json AS "resultsJson", status, version, created_at AS "createdAt", completed_at AS "completedAt"`;
 const json = (data, status = 200) =>
   Response.json(data, { status, headers: { "Cache-Control": "no-store" } });
 const fail = (error, status = 400) => json({ error }, status);
@@ -28,18 +27,28 @@ function unpack(row, userId) {
 export async function tournamentApi(request, env, session, bodyOf) {
   const { pathname, searchParams } = new URL(request.url);
   const userId = session.user.id;
+  const postgres = env.DB.dialect === "postgres";
   if (pathname === "/api/rankings" && request.method === "GET") {
     const sport = searchParams.get("sport") || "padel";
     if (!["padel", "pickleball"].includes(sport))
       return fail("Deporte inválido.");
     const week = weekStart();
-    const cte = `WITH totals AS (
+    const totals = postgres
+      ? `
+      SELECT u.id, u.name, SUM((p.value->>'points')::integer) AS points,
+      SUM((p.value->>'played')::integer) AS played, SUM((p.value->>'wins')::integer) AS wins
+      FROM tournaments t CROSS JOIN LATERAL jsonb_array_elements(t.standings_json::jsonb) p(value)
+      JOIN "user" u ON u.id=p.value->>'userId'
+      WHERE t.status='finished' AND t.week_start=? AND t.sport=? GROUP BY u.id
+    `
+      : `
       SELECT u.id, u.name, SUM(CAST(json_extract(p.value,'$.points') AS INTEGER)) AS points,
       SUM(CAST(json_extract(p.value,'$.played') AS INTEGER)) AS played,
       SUM(CAST(json_extract(p.value,'$.wins') AS INTEGER)) AS wins
-      FROM tournaments t, json_each(t.standings_json) p JOIN user u ON u.id=json_extract(p.value,'$.userId')
+      FROM tournaments t, json_each(t.standings_json) p JOIN "user" u ON u.id=json_extract(p.value,'$.userId')
       WHERE t.status='finished' AND t.week_start=? AND t.sport=? GROUP BY u.id
-    ), ranked AS (SELECT *, RANK() OVER (ORDER BY points DESC,wins DESC) AS position FROM totals)`;
+    `;
+    const cte = `WITH totals AS (${totals}), ranked AS (SELECT *, RANK() OVER (ORDER BY points DESC,wins DESC) AS position FROM totals)`;
     const [leaders, personal, total] = await env.DB.batch([
       env.DB.prepare(
         `${cte} SELECT * FROM ranked ORDER BY position,name,id LIMIT 100`,
@@ -71,7 +80,7 @@ export async function tournamentApi(request, env, session, bodyOf) {
   }
   if (pathname === "/api/tournaments" && request.method === "GET") {
     const { results } = await env.DB.prepare(
-      `SELECT id,name,sport,status,version,created_at AS createdAt,completed_at AS completedAt,json_array_length(players_json) AS playerCount,owner_id AS ownerId FROM tournaments WHERE owner_id=? OR EXISTS(SELECT 1 FROM json_each(players_json) WHERE json_extract(value,'$.userId')=?) ORDER BY created_at DESC LIMIT 100`,
+      `SELECT id,name,sport,status,version,created_at AS "createdAt",completed_at AS "completedAt",${postgres ? "jsonb_array_length(players_json::jsonb)" : "json_array_length(players_json)"} AS "playerCount",owner_id AS "ownerId" FROM tournaments WHERE owner_id=? OR EXISTS(${postgres ? "SELECT 1 FROM jsonb_array_elements(players_json::jsonb) p(value) WHERE value->>'userId'=?" : "SELECT 1 FROM json_each(players_json) WHERE json_extract(value,'$.userId')=?"}) ORDER BY created_at DESC LIMIT 100`,
     )
       .bind(userId, userId)
       .all();
@@ -115,7 +124,7 @@ export async function tournamentApi(request, env, session, bodyOf) {
       if (typeof player.email === "string" && player.email.trim()) {
         if (player.email.length > 254) return fail("Email inválido.");
         registered = await env.DB.prepare(
-          "SELECT id,name FROM user WHERE email=? COLLATE NOCASE",
+          'SELECT id,name FROM "user" WHERE LOWER(email)=LOWER(?)',
         )
           .bind(player.email.trim().toLowerCase())
           .first();

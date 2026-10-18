@@ -1,6 +1,24 @@
 # HEAT Pádel & Pickleball
 
-Web del club y reservas en Next.js App Router, JavaScript/JSX y CSS con BEM. Sin TypeScript ni Tailwind. Autenticación con Better Auth y persistencia compartida con Cloudflare D1, provisionada por Sites.
+Web del club y reservas en Next.js App Router, JavaScript/JSX y CSS con BEM. Sin TypeScript ni Tailwind. Autenticación con Better Auth y persistencia en Neon/PostgreSQL para Vercel o Cloudflare D1 para Sites.
+
+## Vercel + Neon
+
+En Vercel se compila Next.js con una función dinámica `/api/[...path]`. Fuera de Vercel, el build por defecto conserva la exportación y el Worker de Sites. `vercel.json` fija Next.js, salida `.next` y región `iad1`, junto a Neon US East.
+
+Configura estas variables **solo de servidor** en Vercel → heatpadel → Settings → Environment Variables → Production:
+
+- `DATABASE_URL`: conexión pooled de Neon (la integración la añade automáticamente).
+- `BETTER_AUTH_SECRET`: secreto aleatorio de al menos 32 caracteres, estable entre despliegues.
+- `BETTER_AUTH_URL`: `https://heatpadel.vercel.app`, o el origen HTTPS definitivo del club cuando se cambie el dominio.
+
+No hacen falta todas las variantes `PG*`/`POSTGRES*`, Firebase ni Neon Auth. No uses `NEXT_PUBLIC_`. Cambiar variables requiere un nuevo despliegue. Usa el dominio configurado para registrarte; las URLs temporales de deployment no son orígenes admitidos.
+
+El build de Vercel Production ejecuta `scripts/migrate-postgres.mjs` antes de compilar. Las migraciones versionadas de `drizzle-postgres/` se aplican en una transacción con bloqueo y checksum. Una migración ya aplicada no se repite ni se modifica. Si falla la conexión, el build falla sin publicar una aplicación incompleta. Para generar futuras migraciones: `npx drizzle-kit generate --config drizzle.postgres.config.mjs`.
+
+Para desarrollo con Neon, copia `.env.example` a `.env.local`, completa los valores privados y deja `BETTER_AUTH_URL=http://localhost:3000`. Ejecuta `npm run db:migrate:postgres` y `npm run dev:node`. Usa una base o rama separada para desarrollo/Preview y aplícale las migraciones explícitamente. Production y Preview no deben compartir la agenda real. `npm run test:postgres` prueba registro, sesiones, reservas y torneos con PostgreSQL efímero en PGlite, sin conectarse a Neon.
+
+**Los datos de Sites/D1 y Neon son independientes.** Instalar esta versión no copia cuentas, reservas ni torneos existentes de D1. Para conservarlos al cambiar de alojamiento se necesita una migración de datos específica. La nueva base de Neon comienza vacía.
 
 ## Desarrollo
 
@@ -33,7 +51,7 @@ El orden de las secciones es: portada, club, canchas, academia, experiencia («Q
 
 ## Alcance
 
-Incluye registro con nombre, apellido, nacimiento, nacionalidad, email y contraseña; inicio y cierre de sesión; dashboard, disponibilidad, reservas por hora, reprogramación, cancelación, ranking semanal personal y organización de torneos americanos. Las páginas de Next.js son shells estáticas: toda lectura o escritura de datos privados exige sesión en el Worker.
+Incluye registro con nombre, apellido, nacimiento, nacionalidad, email y contraseña; inicio y cierre de sesión; dashboard, disponibilidad, reservas por hora, reprogramación, cancelación, ranking semanal personal y organización de torneos americanos. Las páginas de Next.js son shells estáticas: toda lectura o escritura de datos privados exige sesión en el servidor (Next.js en Vercel o Worker en Sites).
 
 Los horarios son de 07:00 a 23:00 de Playa del Carmen (`America/Cancun`), con turnos de una hora y último inicio a las 22:00. Las modificaciones y cancelaciones se permiten hasta exactamente 24 horas antes del inicio. Reservar con menos anticipación es posible, pero el turno queda sin posibilidad de modificación o cancelación por el usuario.
 
