@@ -25,12 +25,16 @@
 .rankings__row--you {
   background: #c6f85114;
 }
+.member-ranking,
+.americanos {
+  margin-top: clamp(32px, 4vw, 52px);
+}
 .member-ranking__personal {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 35px;
-  padding: 10px 0 38px;
+  padding: 0 0 38px;
 }
 .member-ranking__personal h2 {
   font: 400 clamp(30px, 3.2vw, 48px) / 1.1 var(--display);
@@ -205,6 +209,7 @@
 .americanos .dashboard__section-heading,
 .americano-setup .dashboard__section-heading {
   gap: 22px;
+  margin-bottom: 32px;
 }
 .americanos .dashboard__section-heading h2 {
   overflow-wrap: anywhere;
@@ -477,11 +482,24 @@
   margin-bottom: 16px;
 }
 .americano-match {
-  background: #fffef9;
-  border: 1px solid #d8dfd2;
+  background-color: #102b30;
+  background-image:
+    linear-gradient(180deg, #092b3de6, #092b3d99 55%, #092b3de6),
+    url("/images/club-02.webp");
+  background-position:
+    center,
+    50% 65%;
+  background-size: cover;
+  color: #fff;
+  border: 1px solid #34555e;
   border-radius: 10px;
   margin-bottom: 20px;
   padding: 24px;
+}
+.americano-match--pickleball {
+  background-image:
+    linear-gradient(180deg, #092b3de6, #092b3d99 55%, #092b3de6),
+    url("/images/club-01.webp");
 }
 .americano-match--saved {
   border-color: #a9c56c;
@@ -494,15 +512,15 @@
   font-size: 9px;
   letter-spacing: 0.08em;
   padding-bottom: 18px;
-  border-bottom: 1px solid #e3e8dc;
+  border-bottom: 1px solid #ffffff40;
 }
 .americano-match__heading small {
-  color: #61716b;
+  color: #d3e2e5;
   font-size: 10px;
   letter-spacing: 0;
 }
 .americano-match--saved .americano-match__heading small {
-  color: #426314;
+  color: var(--lime);
 }
 .americano-match__teams {
   display: grid;
@@ -519,9 +537,10 @@
   font-weight: 600;
   min-width: 0;
   overflow-wrap: anywhere;
+  text-shadow: 0 1px 5px #092b3d;
 }
 .americano-match__teams > span {
-  color: #8a9b8d;
+  color: var(--lime);
   font: 400 22px/1 var(--display);
 }
 .americano-match__teams small {
@@ -529,6 +548,8 @@
   font-size: 8px;
   padding: 3px;
   background: var(--lime);
+  color: #10272d;
+  text-shadow: none;
 }
 .americano-match__score {
   display: grid;
@@ -539,7 +560,7 @@
 }
 .americano-match__score label {
   font-size: 9px;
-  color: #657666;
+  color: #e0ecee;
   display: flex;
   flex-direction: column;
   align-items: center;

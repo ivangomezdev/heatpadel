@@ -212,6 +212,7 @@ export default function Americanos({ user, onRanking }) {
                 <AmericanoMatch
                   key={match.id}
                   match={match}
+                  sport={tournament.sport}
                   players={tournament.players}
                   result={tournament.results[match.id]}
                   target={tournament.pointsPerMatch}

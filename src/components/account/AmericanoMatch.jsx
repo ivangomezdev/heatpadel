@@ -11,6 +11,7 @@ export default function AmericanoMatch({
   busy,
   onSave,
   userId,
+  sport = "padel",
 }) {
   const [a, setA] = useState(result?.a ?? ""),
     [b, setB] = useState(result?.b ?? "");
@@ -42,7 +43,7 @@ export default function AmericanoMatch({
     });
   return (
     <form
-      className={`americano-match${result ? " americano-match--saved" : ""}`}
+      className={`americano-match${result ? " americano-match--saved" : ""}${sport === "pickleball" ? " americano-match--pickleball" : ""}`}
       onSubmit={(e) => {
         e.preventDefault();
         onSave(match.id, a, b);
@@ -91,7 +92,7 @@ export default function AmericanoMatch({
         </label>
       </div>
       {editable && (
-        <Button type="submit" disabled={busy || !changed} variant="dark">
+        <Button type="submit" disabled={busy || !changed}>
           {busy
             ? "Guardando…"
             : result
