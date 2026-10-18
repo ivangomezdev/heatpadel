@@ -1,0 +1,9 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><title>HEAT — revisión responsive</title><style>body{margin:0;background:#ddd;font:13px system-ui}nav{padding:10px;display:flex;gap:10px;flex-wrap:wrap}button{padding:8px}iframe{border:0;transform-origin:top left;display:block}pre{display:none}#stage{overflow:hidden}</style><nav><button onclick="size(390,844)">Móvil 390</button><button onclick="size(320,568)">Móvil 320</button><button onclick="size(1440,900)">Escritorio 1440</button><button onclick="verify()">Verificar</button><button onclick="scene(1)">Pickleball</button><button onclick="scene(2)">Academia</button><button onclick="club()">El club</button></nav><pre id="report">Revisión visual local</pre><div id="stage"><iframe id="preview" src="/" title="Vista de HEAT"></iframe></div><script>
+const preview=document.querySelector('#preview');
+function size(w,h){preview.style.width=w+'px';preview.style.height=h+'px';const scale=Math.min(1,(innerWidth-20)/w,(innerHeight-65)/h);preview.style.transform=`scale(${scale})`;document.querySelector('#stage').style.height=h*scale+'px';preview.contentWindow.scrollTo({top:0,behavior:'instant'});}
+function scene(i){preview.contentDocument.querySelectorAll('.hero__step')[i].click()}
+function club(){preview.contentDocument.querySelector('#club').scrollIntoView({behavior:'instant'})}
+function verify(){const d=preview.contentDocument;document.querySelector('#report').textContent=JSON.stringify({width:d.documentElement.clientWidth,scrollWidth:d.documentElement.scrollWidth,overflow:d.documentElement.scrollWidth>d.documentElement.clientWidth,brokenImages:[...d.images].filter(x=>x.complete&&!x.naturalWidth).map(x=>x.src),scene:[...d.querySelectorAll('[data-scene]')].map(x=>x.style.getPropertyValue('--scene-opacity')),header:d.querySelector('.header').getBoundingClientRect().width,errors:'Ver consola del navegador'},null,2)}
+preview.onload=()=>size(390,844);
+</script></html>
+
