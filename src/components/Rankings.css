@@ -196,17 +196,55 @@
   padding: 17px 9px 19px;
   border: 1px solid #ffffff18;
   border-radius: 9px;
-  background: linear-gradient(155deg, #ffffff0d, #ffffff03);
+  overflow: hidden;
+  background: #202527;
   text-align: center;
+}
+.rankings__podium-photo {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1);
+  opacity: 0.72;
+}
+.rankings__podium-place::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: linear-gradient(
+    180deg,
+    #11171970 0%,
+    #1117190d 38%,
+    #111719c7 66%,
+    #111719f5 100%
+  );
+  pointer-events: none;
 }
 .rankings__podium-place--1 {
   order: 2;
   min-height: 224px;
   padding-top: 17px;
-  background: var(--lime);
-  color: var(--ink);
+  background: #15221c;
+  color: #fff;
   border-color: var(--lime);
   box-shadow: 0 8px 32px #c4f35b10;
+}
+.rankings__podium-place--1 .rankings__podium-photo {
+  filter: none;
+  opacity: 1;
+}
+.rankings__podium-place--1::after {
+  background: linear-gradient(
+    180deg,
+    #10221b50 0%,
+    #10221b00 37%,
+    #10221bb8 67%,
+    #10221bf5 100%
+  );
 }
 .rankings__podium-place--2 {
   order: 1;
@@ -215,13 +253,25 @@
   order: 3;
 }
 .rankings__place-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 21px;
+  padding: 4px 7px;
+  border-radius: 3px;
+  background: #1117199c;
   font-size: 8px;
   letter-spacing: 1.5px;
-  color: #becdce;
+  color: #fff;
 }
 .rankings__podium-place--1 .rankings__place-label {
-  color: #344822;
+  color: var(--ink);
+  background: var(--lime);
   font-weight: 700;
+}
+.rankings__place-label > svg {
+  width: 13px;
+  height: 13px;
 }
 .rankings__avatar {
   display: inline-flex;
@@ -237,45 +287,21 @@
   font-size: 13px;
   letter-spacing: 0.5px;
 }
-.rankings__podium-place > .rankings__avatar {
-  margin: 15px 0 12px;
-  outline: 3px solid #ffffff07;
-  outline-offset: 4px;
-}
-.rankings__podium-place--3 .rankings__avatar {
-  color: #f0c8a4;
-  border-color: #a98d75;
-  background: #493f35;
-}
-.rankings__podium-place > .rankings__avatar--champion {
-  position: relative;
-  width: 53px;
-  height: 53px;
-  margin-top: 26px;
-  background: #172c22;
-  border: 1px solid #172c22;
-  color: var(--lime);
-  outline-color: #233b2429;
-  font-size: 16px;
-}
-.rankings__crown {
-  position: absolute;
-  top: -22px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: #172c22;
-}
 .rankings__podium-name {
   max-width: 130px;
-  margin: 0;
+  margin: auto 0 0;
+  padding-top: 48px;
   font-size: 13px;
   line-height: 1.35;
   font-weight: 500;
-  min-height: 36px;
+  text-shadow: 0 1px 5px #0008;
 }
 .rankings__podium-score {
   margin-top: 7px;
   font: 400 29px/1.1 var(--display);
+}
+.rankings__podium-place--1 .rankings__podium-score {
+  color: var(--lime);
 }
 .rankings__podium-score > span {
   font: 400 8px var(--body);
@@ -287,11 +313,13 @@
   z-index: -1;
   bottom: 5px;
   right: 6px;
-  font: 400 70px/1 var(--display);
-  opacity: 0.035;
+  font: 400 82px/1 var(--display);
+  color: #d6dcdd;
+  opacity: 0.2;
 }
 .rankings__podium-place--1 .rankings__podium-number {
-  opacity: 0.07;
+  color: var(--lime);
+  opacity: 0.28;
 }
 .rankings__table {
   width: 100%;

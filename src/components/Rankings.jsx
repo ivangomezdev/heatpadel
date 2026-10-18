@@ -26,22 +26,14 @@ function Crown() {
   );
 }
 
-function PlayerAvatar({ name, champion = false }) {
+function PlayerAvatar({ name }) {
   const initials = name
     .split(" ")
     .map((part) => part[0])
     .slice(0, 2)
     .join("");
   return (
-    <span
-      className={`rankings__avatar${champion ? " rankings__avatar--champion" : ""}`}
-      aria-hidden="true"
-    >
-      {champion && (
-        <span className="rankings__crown">
-          <Crown />
-        </span>
-      )}
+    <span className="rankings__avatar" aria-hidden="true">
       {initials}
     </span>
   );
@@ -55,12 +47,21 @@ function Podium({ players }) {
           key={player.id}
           className={`rankings__podium-place rankings__podium-place--${index + 1}`}
         >
+          <img
+            className="rankings__podium-photo"
+            src={player.image || "/images/club-wide.webp"}
+            alt=""
+            loading="lazy"
+            width="400"
+            height="600"
+            style={{ objectPosition: player.imagePosition || "50% 30%" }}
+          />
           <span className="rankings__place-label">
+            {index === 0 && <Crown />}
             {index === 0
               ? "LÍDER"
               : `${String(index + 1).padStart(2, "0")} · TOP 3`}
           </span>
-          <PlayerAvatar name={player.name} champion={index === 0} />
           <h4 className="rankings__podium-name">{player.name}</h4>
           <p className="rankings__podium-score">
             {player.points.toLocaleString("es-MX")} <span>PTS</span>
@@ -235,7 +236,8 @@ export default function Rankings() {
         </div>
         {selected.isDemo && (
           <p className="rankings__demo-note">
-            Vista previa con jugadores y puntos ficticios.
+            Vista previa con jugadores y puntos ficticios. Fotografías
+            ilustrativas.
           </p>
         )}
       </div>
