@@ -438,14 +438,9 @@ a:focus-visible {
   font-family: var(--display);
   font-size: 25px;
 }
-.club-strip__ball {
-  width: 31px;
-  height: 31px;
-  flex-shrink: 0;
-  object-fit: contain;
-  border: 1px solid #111;
-  border-radius: 50%;
-  filter: drop-shadow(0 0 0.5px #000);
+.club-strip__star {
+  font-family: Arial, sans-serif;
+  font-size: 31px;
 }
 .club {
   display: grid;
@@ -1077,9 +1072,8 @@ a:focus-visible {
     font-size: 21px;
     padding: 16px 24px;
   }
-  .club-strip__ball {
-    width: 25px;
-    height: 25px;
+  .club-strip__star {
+    font-size: 25px;
   }
   .club {
     display: block;

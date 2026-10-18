@@ -19,41 +19,13 @@ export default function Landing() {
         <ScrollHero onReserve={openBooking} />
         <div className="club-strip" aria-label="Tu juego. Tu ritmo. Tu lugar.">
           <span>TU JUEGO.</span>
-          <img
-            className="club-strip__ball"
-            src="/images/padel-ball.webp"
-            width="31"
-            height="31"
-            alt=""
-            aria-hidden="true"
-          />
+          <span className="club-strip__star">✳</span>
           <span>TU RITMO.</span>
-          <img
-            className="club-strip__ball"
-            src="/images/padel-ball.webp"
-            width="31"
-            height="31"
-            alt=""
-            aria-hidden="true"
-          />
+          <span className="club-strip__star">✳</span>
           <span>TU LUGAR.</span>
-          <img
-            className="club-strip__ball"
-            src="/images/padel-ball.webp"
-            width="31"
-            height="31"
-            alt=""
-            aria-hidden="true"
-          />
+          <span className="club-strip__star">✳</span>
           <span>FEEL THE HEAT.</span>
-          <img
-            className="club-strip__ball"
-            src="/images/padel-ball.webp"
-            width="31"
-            height="31"
-            alt=""
-            aria-hidden="true"
-          />
+          <span className="club-strip__star">✳</span>
         </div>
         <section className="club section" id="club">
           <div className="club__heading">
