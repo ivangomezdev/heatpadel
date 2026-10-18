@@ -19,8 +19,12 @@ Abre http://localhost:3000. `npm run build` genera la versión estática en `out
 - `src/components/BookingDialog.jsx`: diálogo accesible con foco, Escape y canales de reserva.
 - `src/components/ui.jsx`: botones, flechas y etiquetas reutilizables.
 - `src/components/Landing.jsx`: secciones de la landing.
+- `src/components/Rankings.jsx` y `Rankings.css`: podio semanal con selector de deporte y fotografías ilustrativas.
+- `src/data/rankings.js`: jugadores y puntos ficticios de la vista previa.
 - `src/app/globals.css`: estilos BEM, variables y breakpoints.
-- `public/images`: logo original, fotografías del club y jugadores generados optimizados en WebP.
+- `public/images`: logo original y variante para fondos claros, fotografías del club, fotografías de stock y jugadores generados optimizados en WebP.
+
+El orden de las secciones es: portada, club, canchas, academia, experiencia («Quédate un set más»), ranking y contacto. Los créditos de las fotografías del podio están en `docs/ranking-photos.md`; el flujo previsto para el ranking conectado a reservas, en `docs/weekly-ranking.md`.
 
 ## Alcance
 

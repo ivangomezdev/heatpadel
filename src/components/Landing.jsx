@@ -29,6 +29,13 @@ export default function Landing() {
           <span className="club-strip__star">✳</span>
         </div>
         <section className="club section" id="club">
+          <img
+            className="club__brand"
+            src="/images/heat-logo-dark.svg"
+            alt="HEAT Pádel & Pickleball"
+            width="112"
+            height="37"
+          />
           <div className="club__heading">
             <SectionLabel>BIENVENIDO A HEAT</SectionLabel>
             <h2 className="section__title">
@@ -164,7 +171,6 @@ export default function Landing() {
             </Button>
           </div>
         </section>
-        <Rankings />
         <section className="experience section">
           <div className="section__head">
             <div>
@@ -228,6 +234,7 @@ export default function Landing() {
             </article>
           </div>
         </section>
+        <Rankings />
         <section className="contact" id="contacto">
           <img
             className="contact__background"
