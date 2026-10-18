@@ -52,22 +52,20 @@ export default function Landing() {
           </div>
           <div className="club__stats">
             <div>
-              <strong>
-                05<span> / </span>
-              </strong>
+              <strong>05</strong>
               <p>Canchas de pádel</p>
             </div>
             <div>
-              <strong>
-                04<span> / </span>
-              </strong>
+              <strong>04</strong>
               <p>Canchas de pickleball</p>
             </div>
             <div>
-              <strong>
-                01<span> / </span>
+              <strong className="club__community-title">
+                TU
+                <br />
+                COMUNIDAD
               </strong>
-              <p>Comunidad. Toda la energía.</p>
+              <p>Dentro y fuera de la cancha.</p>
             </div>
             <div className="club__hours">
               <span>JUEGA A TU RITMO</span>
