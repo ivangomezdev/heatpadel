@@ -1,0 +1,30 @@
+/* Content stays visible until JavaScript enables the viewport observer. */
+.reveal--pending {
+  opacity: 0;
+  transform: translateY(26px);
+}
+
+.reveal--visible {
+  animation: reveal-rise 760ms cubic-bezier(0.22, 1, 0.36, 1)
+    var(--reveal-delay, 0ms) both;
+}
+
+@keyframes reveal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal--pending,
+  .reveal--visible {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}

@@ -1,0 +1,32 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><title>HEAT · Revisión de animaciones</title>
+<style>body{margin:0;background:#deded8;font:12px sans-serif}nav{padding:8px;display:flex;gap:7px;flex-wrap:wrap}button{padding:8px}iframe{display:block;transform-origin:top left;border:0}#stage{overflow:hidden}pre{white-space:pre-wrap;font:11px monospace;margin:8px}</style>
+<nav><button onclick="size(1440,900)">Escritorio</button><button onclick="size(320,700)">Móvil 320</button><button onclick="jump('#club')">Club</button><button onclick="jump('#rankings')">Ranking</button><button id="run" onclick="run()">Verificar animaciones</button></nav><pre id="report">Cargando…</pre><div id="stage"><iframe id="preview" src="/" title="Vista de HEAT"></iframe></div>
+<script>
+const frame=document.querySelector('#preview');
+const counts=new Map();
+let ready=false;
+function size(w,h){frame.style.width=w+'px';frame.style.height=h+'px';const scale=Math.min(1,(innerWidth-16)/w,(innerHeight-100)/h);frame.style.transform=`scale(${scale})`;document.querySelector('#stage').style.height=h*scale+'px';}
+function jump(selector){frame.contentDocument.querySelector(selector).scrollIntoView({block:'start',behavior:'instant'});}
+const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+async function run(){
+ if(!ready)return;
+ const button=document.querySelector('#run');button.disabled=true;
+ const d=frame.contentDocument;
+ const items=[...d.querySelectorAll('.reveal')];
+ document.querySelector('#report').textContent='Recorriendo títulos y estadísticas…';
+ for(const item of items){item.scrollIntoView({block:'center',behavior:'instant'});await wait(1100);}
+ const first=items.map(item=>counts.get(item)||0);
+ const visible=items.every(item=>Number(frame.contentWindow.getComputedStyle(item).opacity)===1);
+ for(const item of [...items].reverse()){item.scrollIntoView({block:'center',behavior:'instant'});await wait(120);}
+ await wait(1100);
+ const second=items.map(item=>counts.get(item)||0);
+ const reduced=frame.contentWindow.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ document.querySelector('#report').textContent=JSON.stringify({width:d.documentElement.clientWidth,overflow:d.documentElement.scrollWidth>d.documentElement.clientWidth,targets:items.length,allVisible:visible,reducedMotion:reduced,onceOnly:items.every((item,i)=>first[i]===(reduced?0:1)&&second[i]===first[i]),counts:items.map((item,i)=>({text:item.textContent,count:second[i]}))});
+ button.disabled=false;jump('#club');
+}
+frame.onload=async()=>{
+ frame.contentDocument.addEventListener('animationstart',event=>{if(event.animationName==='reveal-rise')counts.set(event.target,(counts.get(event.target)||0)+1);});
+ await frame.contentDocument.fonts.ready;ready=true;size(1440,900);
+ document.querySelector('#report').textContent='Listo para revisar.';
+};
+</script></html>

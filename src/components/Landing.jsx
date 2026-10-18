@@ -6,6 +6,7 @@ import { Arrow, Button, SectionLabel, Starburst } from "./ui";
 import ScrollHero from "./ScrollHero";
 import BookingDialog from "./BookingDialog";
 import Rankings from "./Rankings";
+import Reveal from "./Reveal";
 
 export default function Landing() {
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -38,11 +39,11 @@ export default function Landing() {
           />
           <div className="club__heading">
             <SectionLabel>BIENVENIDO A HEAT</SectionLabel>
-            <h2 className="section__title">
+            <Reveal as="h2" className="section__title">
               MÁS QUE UN CLUB.
               <br />
               TU LUGAR.
-            </h2>
+            </Reveal>
           </div>
           <div className="club__story">
             <p>
@@ -60,11 +61,15 @@ export default function Landing() {
           </div>
           <div className="club__stats">
             <div>
-              <strong>05</strong>
+              <Reveal as="strong" className="club__count" delay={80}>
+                05
+              </Reveal>
               <p>Canchas de pádel</p>
             </div>
             <div>
-              <strong>04</strong>
+              <Reveal as="strong" className="club__count" delay={180}>
+                04
+              </Reveal>
               <p>Canchas de pickleball</p>
             </div>
             <div>
@@ -86,7 +91,9 @@ export default function Landing() {
           <div className="section__head">
             <div>
               <SectionLabel>EL ESCENARIO DE TU PRÓXIMO PARTIDO</SectionLabel>
-              <h2 className="section__title">AQUÍ SE JUEGA.</h2>
+              <Reveal as="h2" className="section__title">
+                AQUÍ SE JUEGA.
+              </Reveal>
             </div>
             <Button variant="outline-dark" onClick={openBooking}>
               Encuentra tu cancha <Arrow diagonal />
@@ -106,7 +113,7 @@ export default function Landing() {
                 image: "club-01",
                 text: "4 canchas certificadas por Adidas. Toda la energía, otro ritmo.",
               },
-            ].map((court) => (
+            ].map((court, index) => (
               <button className="court" key={court.title} onClick={openBooking}>
                 <img
                   className="court__image"
@@ -118,7 +125,9 @@ export default function Landing() {
                 <span className="court__tag">{court.tag}</span>
                 <div className="court__content">
                   <div>
-                    <h3>{court.title}</h3>
+                    <Reveal as="h3" delay={index * 100}>
+                      {court.title}
+                    </Reveal>
                     <p>{court.text}</p>
                   </div>
                   <span className="court__arrow">
@@ -147,7 +156,7 @@ export default function Landing() {
           </div>
           <div className="academy__content">
             <SectionLabel light>PAQUITO NAVARRO ACADEMY</SectionLabel>
-            <h2 className="section__title">
+            <Reveal as="h2" className="section__title">
               EL TALENTO
               <br />
               SE ENTRENA.
@@ -157,7 +166,7 @@ export default function Landing() {
                 <br />
                 SE COMPARTE.
               </span>
-            </h2>
+            </Reveal>
             <p>
               Aprende con una metodología diseñada por Paquito Navarro y su
               equipo. Programas para todas las edades y niveles, con
@@ -175,7 +184,9 @@ export default function Landing() {
           <div className="section__head">
             <div>
               <SectionLabel>EL PARTIDO ES SOLO EL PRINCIPIO</SectionLabel>
-              <h2 className="section__title">QUÉDATE UN SET MÁS.</h2>
+              <Reveal as="h2" className="section__title">
+                QUÉDATE UN SET MÁS.
+              </Reveal>
             </div>
             <p className="section__intro">
               Entrena, compite, comparte.
@@ -186,7 +197,7 @@ export default function Landing() {
           <div className="experience__grid">
             <article className="experience__item">
               <span className="experience__number">01</span>
-              <h3>Tu lado competitivo.</h3>
+              <Reveal as="h3">Tu lado competitivo.</Reveal>
               <p>
                 Torneos, ligas y ranking para todas las categorías. Encuentra tu
                 próximo reto.
@@ -202,7 +213,9 @@ export default function Landing() {
             </article>
             <article className="experience__item">
               <span className="experience__number">02</span>
-              <h3>El punto de encuentro.</h3>
+              <Reveal as="h3" delay={80}>
+                El punto de encuentro.
+              </Reveal>
               <p>
                 Un snack, una buena charla y simuladores de golf. El cuarto set
                 se vive en The Bunker.
@@ -218,7 +231,9 @@ export default function Landing() {
             </article>
             <article className="experience__item">
               <span className="experience__number">03</span>
-              <h3>Un plan diferente.</h3>
+              <Reveal as="h3" delay={160}>
+                Un plan diferente.
+              </Reveal>
               <p>
                 Eventos de empresa y celebraciones privadas. Haz de la cancha un
                 lugar para conectar.
@@ -244,11 +259,11 @@ export default function Landing() {
           />
           <div className="contact__content">
             <SectionLabel light>PLAYA DEL CARMEN, MÉXICO</SectionLabel>
-            <h2>
+            <Reveal as="h2">
               MENOS PENSARLO.
               <br />
               <span>MÁS JUGARLO.</span>
-            </h2>
+            </Reveal>
             <Button onClick={openBooking}>
               Reserva tu próximo partido <Arrow diagonal />
             </Button>

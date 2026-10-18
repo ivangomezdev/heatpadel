@@ -5,6 +5,7 @@ import { club } from "../data/club";
 import { rankings } from "../data/rankings";
 import { Arrow, Button, SectionLabel } from "./ui";
 import "./Rankings.css";
+import Reveal from "./Reveal";
 
 function Crown() {
   return (
@@ -84,9 +85,9 @@ function Leaderboard({ sport, competitionUrl }) {
           <span className="rankings__eyebrow">
             EL CLUB TIENE A SUS PROTAGONISTAS
           </span>
-          <h3>
+          <Reveal as="h3" delay={100}>
             Ranking semanal <span>· {sport.label}</span>
-          </h3>
+          </Reveal>
         </div>
         <span className="rankings__top-label">
           TOP {String(players.length).padStart(2, "0")}
@@ -199,11 +200,11 @@ export default function Rankings() {
       </div>
       <div className="rankings__content">
         <SectionLabel light>RANKINGS · HEAT CLUB</SectionLabel>
-        <h2 className="rankings__title" id="rankings-title">
+        <Reveal as="h2" className="rankings__title" id="rankings-title">
           TU NOMBRE.
           <br />
           <span>EN LO MÁS ALTO.</span>
-        </h2>
+        </Reveal>
         <p className="rankings__intro">
           Cada partido cuenta. Cada punto te acerca al top.
         </p>

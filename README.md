@@ -18,6 +18,7 @@ Abre http://localhost:3000. `npm run build` genera la versión estática en `out
 - `src/components/Header.jsx`: navegación y menú móvil.
 - `src/components/BookingDialog.jsx`: diálogo accesible con foco, Escape y canales de reserva.
 - `src/components/ui.jsx`: botones, flechas y etiquetas reutilizables.
+- `src/components/Reveal.jsx`: revelado de títulos y cifras al entrar en pantalla una sola vez por carga, con IntersectionObserver y movimiento reducido. El contenido permanece visible si JavaScript o el observador no están disponibles.
 - `src/components/Landing.jsx`: secciones de la landing.
 - `src/components/Rankings.jsx` y `Rankings.css`: podio semanal con selector de deporte y fotografías ilustrativas.
 - `src/data/rankings.js`: jugadores y puntos ficticios de la vista previa.
