@@ -124,11 +124,12 @@ export default function AuthForm({ register = false }) {
                     />
                   </label>
                 </div>
-                <div className="account-form__row">
+                <div className="account-form__row account-form__row--birth-details">
                   <label className="account-form__field">
                     Fecha de nacimiento
                     <input
                       type="date"
+                      className="account-form__date"
                       name="birthDate"
                       autoComplete="bday"
                       required

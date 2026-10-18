@@ -128,6 +128,32 @@
   font-size: 16px;
   height: 50px;
 }
+/* Safari's native date appearance can exceed its grid column and input height. */
+.account-form__field .account-form__date {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  max-width: 100%;
+  min-height: 50px;
+  max-height: 50px;
+  line-height: 20px;
+  text-align: left;
+}
+.account-form__date::-webkit-date-and-time-value {
+  min-width: 0;
+  height: 20px;
+  line-height: 20px;
+  text-align: left;
+}
+.account-form__date::-webkit-datetime-edit,
+.account-form__date::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
+}
+@media (max-width: 360px) {
+  .account-form__row--birth-details {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 .account-form__field input:focus-visible,
 .court-picker__date input:focus-visible {
   outline: 2px solid #597b3b;
