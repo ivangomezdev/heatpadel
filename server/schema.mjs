@@ -102,3 +102,31 @@ export const reservations = sqliteTable(
     index("reservations_user_idx").on(t.userId),
   ],
 );
+
+export const tournaments = sqliteTable(
+  "tournaments",
+  {
+    id: text("id").primaryKey(),
+    ownerId: text("owner_id")
+      .notNull()
+      .references(() => user.id),
+    name: text("name").notNull(),
+    sport: text("sport").notNull(),
+    pointsPerMatch: integer("points_per_match").notNull(),
+    courtCount: integer("court_count").notNull(),
+    playersJson: text("players_json").notNull(),
+    roundsJson: text("rounds_json").notNull(),
+    resultsJson: text("results_json").notNull(),
+    standingsJson: text("standings_json").notNull(),
+    status: text("status").notNull().default("active"),
+    version: integer("version").notNull().default(1),
+    createdAt: integer("created_at").notNull(),
+    updatedAt: integer("updated_at").notNull(),
+    completedAt: integer("completed_at"),
+    weekStart: text("week_start"),
+  },
+  (t) => [
+    index("tournaments_owner_idx").on(t.ownerId),
+    index("tournaments_week_idx").on(t.weekStart, t.sport, t.status),
+  ],
+);

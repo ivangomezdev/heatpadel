@@ -1,4 +1,5 @@
 import { createAuth } from "./auth.mjs";
+import { tournamentApi } from "./tournaments.mjs";
 import {
   COURTS,
   HOURS,
@@ -99,6 +100,13 @@ async function handleApi(request, env) {
   const session = await auth.api.getSession({ headers: request.headers });
   if (!session) return fail("Inicia sesión para continuar.", 401);
   const userId = session.user.id;
+  if (
+    url.pathname === "/api/rankings" ||
+    url.pathname.startsWith("/api/tournaments")
+  ) {
+    const response = await tournamentApi(request, env, session, bodyOf);
+    return response || fail("Ruta no encontrada.", 404);
+  }
   if (url.pathname === "/api/availability" && request.method === "GET") {
     const date = url.searchParams.get("date");
     if (!validDate(date)) return fail("Fecha inválida.");

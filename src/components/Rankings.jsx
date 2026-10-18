@@ -40,7 +40,7 @@ function PlayerAvatar({ name }) {
   );
 }
 
-function Podium({ players }) {
+function Podium({ players, currentUserId }) {
   return (
     <ol className="rankings__podium" aria-label="Los tres mejores jugadores">
       {players.map((player, index) => (
@@ -61,14 +61,19 @@ function Podium({ players }) {
             {index === 0 && <Crown />}
             {index === 0
               ? "LÍDER"
-              : `${String(index + 1).padStart(2, "0")} · TOP 3`}
+              : `${String(player.position || index + 1).padStart(2, "0")} · TOP 3`}
           </span>
-          <h4 className="rankings__podium-name">{player.name}</h4>
+          <h4 className="rankings__podium-name">
+            {player.name}
+            {player.id === currentUserId && (
+              <span className="rankings__you">TÚ</span>
+            )}
+          </h4>
           <p className="rankings__podium-score">
             {player.points.toLocaleString("es-MX")} <span>PTS</span>
           </p>
           <span className="rankings__podium-number" aria-hidden="true">
-            {String(index + 1).padStart(2, "0")}
+            {String(player.position || index + 1).padStart(2, "0")}
           </span>
         </li>
       ))}
@@ -76,7 +81,7 @@ function Podium({ players }) {
   );
 }
 
-function Leaderboard({ sport, competitionUrl }) {
+export function Leaderboard({ sport, competitionUrl, currentUserId }) {
   const players = [...sport.players].sort((a, b) => b.points - a.points);
   return (
     <div className="rankings__board" aria-live="polite" aria-atomic="true">
@@ -95,7 +100,7 @@ function Leaderboard({ sport, competitionUrl }) {
       </div>
       {players.length > 0 ? (
         <>
-          <Podium players={players.slice(0, 3)} />
+          <Podium players={players.slice(0, 3)} currentUserId={currentUserId} />
           {players.length > 3 && (
             <table className="rankings__table">
               <caption className="rankings__sr-only">
@@ -110,16 +115,28 @@ function Leaderboard({ sport, competitionUrl }) {
               </thead>
               <tbody>
                 {players.slice(3).map((player, index) => (
-                  <tr key={player.id}>
+                  <tr
+                    key={player.id}
+                    className={
+                      player.id === currentUserId
+                        ? "rankings__row--you"
+                        : undefined
+                    }
+                  >
                     <td>
                       <span className="rankings__row-position">
-                        {String(index + 4).padStart(2, "0")}
+                        {String(player.position || index + 4).padStart(2, "0")}
                       </span>
                     </td>
                     <th scope="row">
                       <span className="rankings__row-player">
                         <PlayerAvatar name={player.name} />
-                        <span>{player.name}</span>
+                        <span>
+                          {player.name}
+                          {player.id === currentUserId && (
+                            <span className="rankings__you">TÚ</span>
+                          )}
+                        </span>
                       </span>
                     </th>
                     <td>
@@ -131,21 +148,23 @@ function Leaderboard({ sport, competitionUrl }) {
               </tbody>
             </table>
           )}
-          <a
-            className="rankings__invitation"
-            href={competitionUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <span className="rankings__invitation-icon" aria-hidden="true">
-              ?
-            </span>
-            <p>
-              <strong>TU NOMBRE AQUÍ.</strong>
-              <span>El próximo lugar se gana en la cancha.</span>
-            </p>
-            <Arrow diagonal />
-          </a>
+          {competitionUrl && (
+            <a
+              className="rankings__invitation"
+              href={competitionUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className="rankings__invitation-icon" aria-hidden="true">
+                ?
+              </span>
+              <p>
+                <strong>TU NOMBRE AQUÍ.</strong>
+                <span>El próximo lugar se gana en la cancha.</span>
+              </p>
+              <Arrow diagonal />
+            </a>
+          )}
         </>
       ) : (
         <p className="rankings__empty">

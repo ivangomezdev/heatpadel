@@ -1,29 +1,17 @@
-# Ranking semanal — landing y siguiente etapa
+# Ranking semanal de HEAT
 
-## Implementado en la landing
+## Landing
 
-Sección `#rankings` con selectores Pádel/Pickleball y cinco jugadores ficticios por deporte. Un podio destaca los tres primeros puestos, con el líder en verde HEAT; una tabla compacta muestra el resto. La clasificación se ordena por puntos de mayor a menor. Los enlaces «Tu nombre aquí» y «Quiero competir» abren una consulta por WhatsApp para el deporte seleccionado.
+La sección pública conserva los cinco jugadores ficticios por deporte autorizados, con podio, fotografías ilustrativas y enlaces de contacto. Los datos están en `src/data/rankings.js`; la aclaración se muestra fuera de la tabla.
 
-La aclaración de jugadores y puntos ficticios aparece como una nota discreta debajo de la sección, fuera de la tabla. Los registros están en `src/data/rankings.js` y conservan `isDemo: true`. No se reciben resultados de partidos ni se actualiza un ranking real todavía.
+## Dashboard conectado
 
-La imagen de la jugadora es decorativa y no corresponde a ninguna persona de la clasificación. El fondo es una fotografía existente de HEAT. El círculo de las etiquetas se reemplazó por un SVG de pelota de tenis de 7 × 7 px, manteniendo su tamaño.
+`DashboardRanking` consulta `/api/rankings` con sesión. Comparte el componente `Leaderboard`, pero utiliza exclusivamente resultados persistidos. Muestra posición, puntos, partidos y victorias del usuario, incluso fuera del top 100. Una cuenta sin torneos finalizados en la semana figura sin clasificar.
 
-## Flujo solicitado para la aplicación
+Los torneos americanos generan parejas rotativas y permiten registrar marcadores al organizador. Cada integrante recibe los puntos de su pareja. Los participantes se vinculan por email a una cuenta estable; los invitados sin cuenta solo puntúan dentro del torneo. Finalizar exige todos los partidos, bloquea cambios y registra el resultado una sola vez mediante actualización atómica por versión.
 
-1. Un usuario con sesión iniciada reserva una cancha, fecha y hora.
-2. Al llegar al partido, el titular abre esa reserva en su cuenta.
-3. Registra los nombres de todos los jugadores, el puntaje individual y el resultado final del partido.
-4. Los puntos de cada jugador se acumulan en la clasificación semanal correspondiente.
+El ranking semanal suma torneos finalizados de lunes a domingo, en la zona `America/Cancun`, usando la semana en que se cierran. Se separan pádel y pickleball. Desempate semanal por victorias; si persiste se comparte puesto. La tabla del torneo utiliza también diferencia de puntos. No se incorporan invitados al ranking semanal por coincidencia de nombre.
 
-Ejemplo del usuario: Pedro Ruiz reserva una cancha y luego carga los jugadores, puntajes y resultado de ese partido desde su reserva.
+## Siguiente etapa: resultados desde reservas
 
-## Decisiones para la implementación del servidor
-
-- Definir la regla exacta de puntos: relación entre tanteo del partido, resultados por pareja y puntos individuales del ranking.
-- Definir el inicio y cierre de semana en la zona horaria del club (America/Cancun).
-- Asociar participantes a identificadores estables, incluso si hay invitados, para no sumar por nombres que pueden repetirse.
-- Vincular cada resultado a una reserva y comprobar que quien lo registra sea su titular.
-- Evitar sumar el mismo resultado dos veces; al corregir un partido, recalcular sus aportes.
-- Definir si los resultados requieren confirmación de otros participantes o del club, y cómo se resuelven empates.
-
-Estas reglas están pendientes de definición y desarrollo; la entrega actual se limita a la landing.
+Sigue pendiente la carga de resultados de partidos normales desde una reserva: el titular identifica participantes y registra el marcador; los resultados se vincularán a la reserva para no duplicarlos. También quedan pendientes la validación por rivales o por el club, límites de competición y revisión administrativa. Actualmente el organizador del americano declara los resultados; crear un torneo no bloquea horarios ni reserva canchas.

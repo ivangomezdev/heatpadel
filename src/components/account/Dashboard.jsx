@@ -13,6 +13,9 @@ import {
 } from "../../lib/booking";
 import ConfirmDialog from "./ConfirmDialog";
 import BookingDatePicker from "./BookingDatePicker";
+import CourtIllustration from "./CourtIllustration";
+import DashboardRanking from "./DashboardRanking";
+import Americanos from "./Americanos";
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -77,6 +80,8 @@ export default function Dashboard() {
     [date],
   );
   useEffect(() => {
+    const initialView = window.location.hash.slice(1);
+    if (["ranking", "americanos"].includes(initialView)) setView(initialView);
     api("/api/auth/get-session")
       .then(async (session) => {
         if (!session?.user) {
@@ -253,6 +258,18 @@ export default function Dashboard() {
           >
             Mis reservas <span>{upcoming.length}</span>
           </button>
+          <button
+            className={`dashboard__nav-link${view === "ranking" ? " dashboard__nav-link--active" : ""}`}
+            onClick={() => setView("ranking")}
+          >
+            Mi ranking
+          </button>
+          <button
+            className={`dashboard__nav-link${view === "americanos" ? " dashboard__nav-link--active" : ""}`}
+            onClick={() => setView("americanos")}
+          >
+            Americanos
+          </button>
         </nav>
         <div className="dashboard__identity">
           <span className="dashboard__avatar" title={user.name}>
@@ -278,6 +295,18 @@ export default function Dashboard() {
                   <br />
                   <span>GRAN PARTIDO.</span>
                 </>
+              ) : view === "ranking" ? (
+                <>
+                  TU NOMBRE.
+                  <br />
+                  <span>EN LO MÁS ALTO.</span>
+                </>
+              ) : view === "americanos" ? (
+                <>
+                  CAMBIA DE PAREJA.
+                  <br />
+                  <span>SUMA A LO GRANDE.</span>
+                </>
               ) : (
                 <>
                   MÁS JUEGO.
@@ -289,7 +318,11 @@ export default function Dashboard() {
             <p>
               {view === "book"
                 ? "Elige tu cancha. Nosotros ponemos la energía."
-                : "Todos tus partidos, en un solo lugar."}
+                : view === "ranking"
+                  ? "Tu esfuerzo se ve. Tu posición también."
+                  : view === "americanos"
+                    ? "Organiza, juega y sigue cada punto de tu torneo."
+                    : "Todos tus partidos, en un solo lugar."}
             </p>
           </div>
           <div className="dashboard__hero-stamp">
@@ -313,7 +346,14 @@ export default function Dashboard() {
             {error}
           </p>
         )}
-        {view === "book" ? (
+        {view === "ranking" ? (
+          <DashboardRanking
+            user={user}
+            onCompete={() => setView("americanos")}
+          />
+        ) : view === "americanos" ? (
+          <Americanos user={user} onRanking={() => setView("ranking")} />
+        ) : view === "book" ? (
           <div className="dashboard__booking-layout">
             <section className="court-picker">
               <div className="dashboard__section-heading">
@@ -389,9 +429,9 @@ export default function Dashboard() {
                         setHour(null);
                       }}
                     >
-                      <span
-                        className="court-picker__court-icon"
-                        aria-hidden="true"
+                      <CourtIllustration
+                        sport={c.sport}
+                        selected={courtId === c.id}
                       />
                       <span>{c.name}</span>
                     </button>

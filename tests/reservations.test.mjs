@@ -1,7 +1,7 @@
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { Miniflare, convertV4MiniflareOptions } from "miniflare";
 import { canChange, CHANGE_NOTICE_MS } from "../src/lib/booking.js";
 
@@ -67,10 +67,14 @@ before(async () => {
     }),
   );
   db = await mf.getD1Database("DB");
-  for (const statement of (
-    await readFile("drizzle/0000_romantic_viper.sql", "utf8")
-  ).split("--> statement-breakpoint"))
-    if (statement.trim()) await db.prepare(statement).run();
+  for (const file of (await readdir("drizzle"))
+    .filter((f) => f.endsWith(".sql"))
+    .sort()) {
+    for (const statement of (await readFile(`drizzle/${file}`, "utf8")).split(
+      "--> statement-breakpoint",
+    ))
+      if (statement.trim()) await db.prepare(statement).run();
+  }
   alice = await signup("alice@example.test", "127.0.0.2");
   assert.equal(alice.status, 200, JSON.stringify(alice.body));
   bob = await signup("bob@example.test", "127.0.0.3");
@@ -304,5 +308,170 @@ test("inicio de sesión rechaza contraseña incorrecta; logout revoca sesión", 
   assert.equal(
     (await request("/api/reservations", { cookie: login.cookie })).status,
     401,
+  );
+});
+
+test("americano: acceso, validación, concurrencia y publicación única al ranking semanal", async () => {
+  await db
+    .prepare("UPDATE user SET name='Alice QA' WHERE id=?")
+    .bind(alice.body.user.id)
+    .run();
+  await db
+    .prepare("UPDATE user SET name='Bob QA' WHERE id=?")
+    .bind(bob.body.user.id)
+    .run();
+  const payload = {
+    name: "Americano QA",
+    sport: "padel",
+    courtCount: 1,
+    pointsPerMatch: 24,
+    players: [
+      { email: "alice@example.test" },
+      { email: "bob@example.test" },
+      { name: "Invitada Uno" },
+      { name: "Invitado Dos" },
+    ],
+  };
+  const create = (body) =>
+    request("/api/tournaments", { method: "POST", cookie: alice.cookie, body });
+  assert.equal((await request("/api/tournaments")).status, 401);
+  for (const body of [
+    { ...payload, players: payload.players.slice(0, 3) },
+    { ...payload, courtCount: 2 },
+    {
+      ...payload,
+      players: [{ email: "missing@example.test" }, ...payload.players.slice(1)],
+    },
+    {
+      ...payload,
+      players: [{ email: "bob@example.test" }, ...payload.players.slice(1)],
+    },
+  ])
+    assert.equal((await create(body)).status, 400);
+  const created = await create(payload);
+  assert.equal(created.status, 201, JSON.stringify(created.body));
+  const path = `/api/tournaments/${created.body.id}`;
+  let state = (await request(path, { cookie: alice.cookie })).body.tournament;
+  assert.equal(state.canEdit, true);
+  assert.equal(JSON.stringify(state).includes("@"), false);
+  const participant = await request(path, { cookie: bob.cookie });
+  assert.equal(participant.status, 200);
+  assert.equal(participant.body.tournament.canEdit, false);
+  assert.ok(
+    (
+      await request("/api/tournaments", { cookie: bob.cookie })
+    ).body.tournaments.some((t) => t.id === state.id),
+  );
+  const outsider = await signup("outsider@example.test", "127.0.0.4");
+  assert.equal((await request(path, { cookie: outsider.cookie })).status, 404);
+  assert.equal(
+    (
+      await request(path, {
+        method: "PATCH",
+        cookie: bob.cookie,
+        body: { action: "finish", version: 1 },
+      })
+    ).status,
+    403,
+  );
+  const change = (body) =>
+    request(path, { method: "PATCH", cookie: alice.cookie, body });
+  assert.equal((await change({ action: "finish", version: 1 })).status, 400);
+  const matches = state.rounds.flatMap((r) => r.matches);
+  assert.equal(
+    (
+      await change({
+        action: "score",
+        matchId: matches[0].id,
+        a: 24,
+        b: 24,
+        version: 1,
+      })
+    ).status,
+    400,
+  );
+  assert.equal(
+    (
+      await change({
+        action: "score",
+        matchId: "missing",
+        a: 12,
+        b: 12,
+        version: 1,
+      })
+    ).status,
+    404,
+  );
+  const race = await Promise.all(
+    [0, 1].map(() =>
+      change({
+        action: "score",
+        matchId: matches[0].id,
+        a: 12,
+        b: 12,
+        version: 1,
+      }),
+    ),
+  );
+  assert.deepEqual(race.map((r) => r.status).sort(), [200, 409]);
+  state = race.find((r) => r.status === 200).body.tournament;
+  for (const match of matches.slice(1)) {
+    const saved = await change({
+      action: "score",
+      matchId: match.id,
+      a: 12,
+      b: 12,
+      version: state.version,
+    });
+    assert.equal(saved.status, 200);
+    state = saved.body.tournament;
+  }
+  assert.equal(
+    (await request("/api/rankings", { cookie: alice.cookie })).body.total,
+    0,
+  );
+  const finished = await Promise.all(
+    [0, 1].map(() => change({ action: "finish", version: state.version })),
+  );
+  assert.deepEqual(finished.map((r) => r.status).sort(), [200, 409]);
+  const board = await request("/api/rankings", { cookie: alice.cookie });
+  assert.equal(board.status, 200, JSON.stringify(board.body));
+  assert.equal(board.body.total, 2);
+  assert.equal(board.body.me.points, 36);
+  assert.equal(board.body.me.position, 1);
+  assert.ok(
+    board.body.players.every(
+      (p) => p.position === 1 && p.played === 3 && p.points === 36,
+    ),
+  );
+  assert.equal(
+    (await request("/api/rankings?sport=pickleball", { cookie: alice.cookie }))
+      .body.total,
+    0,
+  );
+  assert.equal(
+    (await request("/api/rankings", { cookie: outsider.cookie })).body.me
+      .position,
+    null,
+  );
+  assert.equal(
+    (
+      await change({
+        action: "score",
+        matchId: matches[0].id,
+        a: 24,
+        b: 0,
+        version: state.version + 1,
+      })
+    ).status,
+    409,
+  );
+  await db
+    .prepare("UPDATE tournaments SET week_start='2026-01-05' WHERE id=?")
+    .bind(state.id)
+    .run();
+  assert.equal(
+    (await request("/api/rankings", { cookie: alice.cookie })).body.total,
+    0,
   );
 });

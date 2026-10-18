@@ -33,13 +33,32 @@ El orden de las secciones es: portada, club, canchas, academia, experiencia («Q
 
 ## Alcance
 
-Incluye registro con nombre, apellido, nacimiento, nacionalidad, email y contraseña; inicio y cierre de sesión; dashboard, disponibilidad, reservas por hora, reprogramación y cancelación. Las páginas de Next.js son shells estáticas: toda lectura o escritura de datos privados exige sesión en el Worker.
+Incluye registro con nombre, apellido, nacimiento, nacionalidad, email y contraseña; inicio y cierre de sesión; dashboard, disponibilidad, reservas por hora, reprogramación, cancelación, ranking semanal personal y organización de torneos americanos. Las páginas de Next.js son shells estáticas: toda lectura o escritura de datos privados exige sesión en el Worker.
 
 Los horarios son de 07:00 a 23:00 de Playa del Carmen (`America/Cancun`), con turnos de una hora y último inicio a las 22:00. Las modificaciones y cancelaciones se permiten hasta exactamente 24 horas antes del inicio. Reservar con menos anticipación es posible, pero el turno queda sin posibilidad de modificación o cancelación por el usuario.
 
 La disponibilidad solo incluye reservas creadas en esta aplicación. **No sincroniza Playtomic ni reservas tomadas por teléfono/WhatsApp**. Antes de utilizar ambas agendas para reservas reales, debe incorporarse una integración o un mecanismo de bloqueo administrativo. No incluye pagos, recuperación de contraseña por correo, verificación de email ni gestión administrativa. El ranking de la landing conserva los datos ficticios autorizados; no se suman puntos desde reservas todavía.
 
 ## Backend y publicación
+
+### Americanos y ranking
+
+El dashboard reutiliza el podio de la landing con datos reales, resalta al usuario y muestra su posición aunque esté fuera del top 100. El ranking separa pádel y pickleball. Quien aún no haya terminado un torneo aparece «Sin clasificar aún».
+
+Los americanos admiten 4, 8, 12, 16 o 20 jugadores y 16, 24, 32 o 40 puntos totales por partido. Cada participante forma pareja una vez con cada uno de los demás. Si faltan canchas simultáneas, se generan tandas con descansos. Crear el torneo **no reserva las canchas**.
+
+Los participantes con email de una cuenta HEAT se vinculan a su ID; sus nombres se consultan en el servidor y sus emails no se exponen en el torneo. Los invitados sin email solo tienen clasificación dentro del torneo. El organizador edita resultados; los participantes vinculados pueden consultarlos y actualizarlos con el botón de recarga. La clasificación se recalcula al guardar: puntos de la pareja, victorias y diferencia de puntos; empate completo comparte posición.
+
+Finalizar requiere todos los marcadores y bloquea futuras modificaciones. Los puntos pasan una sola vez a la semana del cierre (lunes a domingo en `America/Cancun`). El ranking semanal suma los puntos de los torneos finalizados y desempata por victorias, compartiendo puesto si persiste el empate. No se exige todavía validación del club ni confirmación de los rivales. Los resultados de partidos reservados fuera de un americano siguen pendientes de desarrollo.
+
+- `src/lib/americano.js`: rotación de parejas, tandas, clasificación y semana del club.
+- `server/tournaments.mjs`: API con autorización por organizador/participante y actualización atómica por versión.
+- `src/components/account/Americanos.jsx`, `AmericanoSetup.jsx`, `AmericanoMatch.jsx`: organización, marcadores y clasificación.
+- `src/components/account/DashboardRanking.jsx`: posición personal y ranking real.
+- `src/components/account/CourtIllustration.jsx`: cancha isométrica SVG con red, paredes y trazado según el deporte.
+- `src/app/competition.css`: estilos BEM responsive de competición.
+
+### Infraestructura
 
 - `server/auth.mjs`: Better Auth, hash de contraseña, cookies HttpOnly, sesiones de 7 días y límite persistente de intentos de autenticación.
 - `server/worker.mjs`: API autenticada y comprobación de origen en escrituras; las respuestas de cuenta y reservas nunca se cachean.
@@ -54,7 +73,7 @@ El `wrangler.json` del repositorio usa un ID de base ficticio exclusivamente par
 
 ## Verificación
 
-`npm run build` y `npm test`. Las pruebas usan una base D1 efímera y cubren registro, hash de contraseña, sesión, autorización, conflictos simultáneos, reprogramación atómica, cancelación y liberación de cupos, límite de 24 horas, validación, CSRF y cierre de sesión. Los datos de prueba no se escriben en producción. `docs/account-qa.html` permite revisar escritorio y móviles al copiarlo temporalmente a `out/`; nunca se incluye en el despliegue final.
+`npm run build` y `npm test`. Las 14 pruebas usan una base D1 efímera y cubren registro, hash de contraseña, sesión, autorización, conflictos simultáneos, reprogramación atómica, cancelación y liberación de cupos, límite de 24 horas, validación, CSRF y cierre de sesión. También verifican las rotaciones de 4 a 20 jugadores, descanso equilibrado, marcadores, empates, permisos del torneo, guardado concurrente, cierre único, separación por deporte y semana. Los datos de prueba no se escriben en producción. `docs/account-qa.html` permite revisar escritorio y móviles al copiarlo temporalmente a `out/`; nunca se incluye en el despliegue final.
 
 ## Contenido y recursos
 
