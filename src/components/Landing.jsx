@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { club } from "../data/club";
-import { Arrow, Button, SectionLabel } from "./ui";
+import { Arrow, Button, SectionLabel, Starburst } from "./ui";
 import ScrollHero from "./ScrollHero";
 import BookingDialog from "./BookingDialog";
 import Rankings from "./Rankings";
@@ -20,13 +20,13 @@ export default function Landing() {
         <ScrollHero onReserve={openBooking} />
         <div className="club-strip" aria-label="Tu juego. Tu ritmo. Tu lugar.">
           <span>TU JUEGO.</span>
-          <span className="club-strip__star">✳</span>
+          <Starburst className="club-strip__star" />
           <span>TU RITMO.</span>
-          <span className="club-strip__star">✳</span>
+          <Starburst className="club-strip__star" />
           <span>TU LUGAR.</span>
-          <span className="club-strip__star">✳</span>
+          <Starburst className="club-strip__star" />
           <span>FEEL THE HEAT.</span>
-          <span className="club-strip__star">✳</span>
+          <Starburst className="club-strip__star" />
         </div>
         <section className="club section" id="club">
           <img
