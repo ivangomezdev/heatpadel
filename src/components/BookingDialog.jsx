@@ -45,30 +45,25 @@ export default function BookingDialog({ open, onClose }) {
           TE ESPERA.
         </h2>
         <p className="booking__description">
-          Consulta los horarios disponibles y confirma tu reserva en Playtomic,
-          o habla directamente con nuestro equipo.
+          Entra a tu cuenta, elige un horario disponible y reserva tu próximo partido.
         </p>
         <a
           className="booking__option"
-          href={`${club.playtomic}?sport=PADEL`}
-          target="_blank"
-          rel="noopener noreferrer"
+          href="/dashboard?sport=padel"
         >
           <span>
             <strong>Pádel</strong>
-            <small>5 canchas · Reservar en Playtomic</small>
+            <small>5 canchas · Ver disponibilidad</small>
           </span>
           <Arrow diagonal />
         </a>
         <a
           className="booking__option"
-          href={`${club.playtomic}?sport=PICKLEBALL`}
-          target="_blank"
-          rel="noopener noreferrer"
+          href="/dashboard?sport=pickleball"
         >
           <span>
             <strong>Pickleball</strong>
-            <small>4 canchas · Reservar en Playtomic</small>
+            <small>4 canchas · Ver disponibilidad</small>
           </span>
           <Arrow diagonal />
         </a>
@@ -78,7 +73,7 @@ export default function BookingDialog({ open, onClose }) {
           external
           variant="dark"
         >
-          Reservar por WhatsApp <Arrow diagonal />
+          Hablar con el club <Arrow diagonal />
         </Button>
         <p className="booking__hours">Atención todos los días · {club.hours}</p>
       </div>

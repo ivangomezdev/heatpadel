@@ -44,6 +44,7 @@ export default function Header({ onReserve }) {
             {item.label}
           </a>
         ))}
+        <a className="header__link" href="/dashboard">Mi cuenta</a>
       </nav>
       <Button className="header__reserve" onClick={onReserve}>
         Reservar cancha <Arrow diagonal />
