@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { navigation } from "../data/club";
 import { Arrow, Button } from "./ui";
 
-export default function Header({ onReserve }) {
+export default function Header() {
   const [open, setOpen] = useState(false);
   const toggleRef = useRef(null);
   useEffect(() => {
@@ -46,7 +46,7 @@ export default function Header({ onReserve }) {
         ))}
         <a className="header__link" href="/dashboard">Mi cuenta</a>
       </nav>
-      <Button className="header__reserve" onClick={onReserve}>
+      <Button className="header__reserve" href="/dashboard">
         Reservar cancha <Arrow diagonal />
       </Button>
       <button

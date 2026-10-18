@@ -5,7 +5,7 @@ import { scenes } from "../data/club";
 import Header from "./Header";
 import { Arrow, Button } from "./ui";
 
-export default function ScrollHero({ onReserve }) {
+export default function ScrollHero() {
   const rootRef = useRef(null);
   const [active, setActive] = useState(0);
 
@@ -120,11 +120,11 @@ export default function ScrollHero({ onReserve }) {
           <span>PLAYA DEL CARMEN, MÉXICO</span>
           <span>PÁDEL · PICKLEBALL · COMUNIDAD</span>
         </div>
-        <Header onReserve={onReserve} />
+        <Header />
         <div className="hero__bottom">
           <div className="hero__intro">
             <p className="hero__description">{scenes[active].description}</p>
-            <Button onClick={onReserve}>
+            <Button href="/dashboard">
               Entra en juego <Arrow diagonal />
             </Button>
           </div>

@@ -18,7 +18,7 @@ export default function Landing() {
         Saltar al contenido
       </a>
       <main>
-        <ScrollHero onReserve={openBooking} />
+        <ScrollHero />
         <div className="club-strip" aria-label="Tu juego. Tu ritmo. Tu lugar.">
           <span>TU JUEGO.</span>
           <Starburst className="club-strip__star" />
